@@ -2,7 +2,7 @@ import React from 'react';
 
 import classes from './Button.module.css';
 
-const Button = (props) => {
+function Button(props) {
   return (
     <button
       className={classes.button}
