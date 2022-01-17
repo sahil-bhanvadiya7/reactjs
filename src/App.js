@@ -45,7 +45,6 @@ function App() {
   return (
     <React.Fragment>
       <NewTask onAddTask={taskAddHandler} />
-      <NewTask onAddTask={taskAddHandler} />
       <Tasks
         items={tasks}
         loading={isLoading}
