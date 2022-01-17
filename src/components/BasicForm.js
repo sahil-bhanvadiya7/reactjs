@@ -77,9 +77,9 @@ const BasicForm = (props) => {
         </div>
       </div>
       <div className={emailClasses}>
-        <label htmlFor="email">E-Mail Address</label>
+        <label htmlFor="name">E-Mail Address</label>
         <input
-          type="text"
+          type="email"
           id="name"
           value={emailValue}
           onChange={emailChangehandler}
