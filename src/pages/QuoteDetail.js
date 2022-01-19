@@ -8,7 +8,7 @@ function QuoteDetail() {
       <div> quote detail page</div>
       <h1>{params.quoteId}</h1>
       <Route path={`/quotes/${params.quoteId}/comments`}>
-          <Comments/>
+        <Comments />
       </Route>
     </>
   );
