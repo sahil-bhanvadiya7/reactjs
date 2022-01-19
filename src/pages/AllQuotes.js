@@ -1,24 +1,35 @@
 import React from "react";
-import QuoteList from '../components/quotes/QuoteList'
-const DUMMY_QUOTES = [
-  {
-    id: "q1",
-    author: "xyz",
-    text: "Learning React is fun!",
-  },
-  {
-    id: "q2",
-    author: "abc",
-    text: "Learning React is fun!",
-  },
-  {
-    id: "q3",
-    author: "spd",
-    text: "Learning React is fun!",
-  },
-];
+import useHttp from "../hooks/use-http";
+import { getAllQuotes } from "../lib/api";
+import { useEffect } from "react";
+import QuoteList from "../components/quotes/QuoteList";
+import NoQuotesFound from "../components/quotes/NoQuotesFound";
+import LoadingSpiner from "../components/UI/LoadingSpinner";
+
 function AllQuotes() {
-  return <QuoteList quotes={DUMMY_QUOTES}/>;
+  const {
+    sendRequest,
+    status,
+    data: loadedQuotes,
+    error,
+  } = useHttp(getAllQuotes, true);
+  useEffect(() => {
+    sendRequest();
+  }, [sendRequest]);
+  if (status === "pending") {
+    return (
+      <div className="centered">
+        <LoadingSpiner />
+      </div>
+    );
+  }
+  if (error) {
+    return <p className="centered focused">{error}</p>;
+  }
+  if (status === "completed" && (!loadedQuotes || loadedQuotes.length === 0)) {
+    return <NoQuotesFound />;
+  }
+  return <QuoteList quotes={loadedQuotes} />;
 }
 
 export default AllQuotes;
