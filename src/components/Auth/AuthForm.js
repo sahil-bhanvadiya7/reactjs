@@ -1,12 +1,15 @@
 import { useState, useRef } from "react";
-
+import { useContext } from "react";
 import classes from "./AuthForm.module.css";
-
+import AuthContext from "../../store/auth-context";
+import { useHistory } from "react-router-dom";
 const AuthForm = () => {
   const [isLogin, setIsLogin] = useState(true);
   const emailInputRef = useRef();
   const passwordInputRef = useRef();
   const [isLoading, setIsLoading] = useState(false);
+  const history = useHistory();
+  const authCtx = useContext(AuthContext);
   const switchAuthModeHandler = () => {
     setIsLogin((prevState) => !prevState);
   };
@@ -19,10 +22,10 @@ const AuthForm = () => {
     let url;
     if (isLogin) {
       url =
-        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCTf3r8EB3-tbtEveeP1bknx4yoGLVZyrU";
+        "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyBt0bKmW1_QASSsoruMJsF1TRTj-7FQtk0";
     } else {
       url =
-        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCTf3r8EB3-tbtEveeP1bknx4yoGLVZyrU";
+        "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyBt0bKmW1_QASSsoruMJsF1TRTj-7FQtk0";
     }
     fetch(url, {
       method: "POST",
@@ -34,24 +37,28 @@ const AuthForm = () => {
       headers: {
         "Content-Type": "application/json",
       },
-    }).then((res) => {
-      setIsLoading(false);
-      if (res.ok) {
-        return res.json();
-      } else {
-        res.json().then((data) => {
-          let errorMessage = "Authentication failed!";
-          // if(data && data.error && data.error.message){
-          //   errorMessage = data.error.message;
-          // }
-          throw new Error(errorMessage)
-        });
-      }
-    }).then(data=>{
-      console.log(data);
-    }).catch(err=>{
-      alert(err.message);
-    });
+    })
+      .then((res) => {
+        setIsLoading(false);
+        if (res.ok) {
+          return res.json();
+        } else {
+          res.json().then((data) => {
+            let errorMessage = "Authentication failed!";
+            throw new Error(errorMessage);
+          });
+        }
+      })
+      .then((data) => {
+        const expirationTime = new Date(
+          new Date().getTime() + +data.expiresIn * 1000
+        );
+        authCtx.login(data.idToken, expirationTime);
+        history.replace("/");
+      })
+      .catch((err) => {
+        alert(err.message);
+      });
   };
 
   return (
